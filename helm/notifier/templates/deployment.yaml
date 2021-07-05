@@ -36,7 +36,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: KAFKA_SERVER
-              value: "kafka:9092"
+              value: "kafka-cluster-1-kafka-bootstrap.kafka:9092"
             - name: SMTP_SERVER
               value: "colossus.kruemel.home"
             - name: SERVER_PORT

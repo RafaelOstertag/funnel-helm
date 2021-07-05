@@ -38,7 +38,7 @@ spec:
             - name: CHRONOS_INTERVAL
               value: "600"
             - name: KAFKA_SERVER
-              value: "kafka:9092"
+              value: "kafka-cluster-1-kafka-bootstrap.kafka:9092"
             - name: SERVER_PORT
               value: "8080"
             - name: MONGO_URL
