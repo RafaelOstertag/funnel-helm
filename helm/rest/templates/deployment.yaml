@@ -35,25 +35,35 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: SERVER_PORT
-              value: "8080"
-            - name: MONGO_URL
+            - name: QUARKUS_MONGODB_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
-                  name: mongo-config
-                  key: mongo-url
+                  name: mongo-config-rest
+                  key: url
+            - name: QUARKUS_OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oidc-config-rest
+                  key: clientId
+            - name: QUARKUS_OIDC_CREDENTIALS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oidc-config-rest
+                  key: secret
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-cluster-1-kafka-bootstrap.kafka:9092"
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /info
+              path: /q/health/live
               port: http
             initialDelaySeconds: 60
           readinessProbe:
             httpGet:
-              path: /info
+              path: /q/health/ready
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

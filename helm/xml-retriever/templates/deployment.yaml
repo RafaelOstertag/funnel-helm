@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "persistence.fullname" . }}
+  name: {{ include "retriever.fullname" . }}
   labels:
-    {{- include "persistence.labels" . | nindent 4 }}
+    {{- include "retriever.labels" . | nindent 4 }}
 spec:
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
 {{- end }}
   selector:
     matchLabels:
-      {{- include "persistence.selectorLabels" . | nindent 6 }}
+      {{- include "retriever.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -19,13 +19,13 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "persistence.selectorLabels" . | nindent 8 }}
+        {{- include "retriever.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "persistence.serviceAccountName" . }}
+      serviceAccountName: {{ include "retriever.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,27 +35,29 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: KAFKA_SERVER
-              value: "kafka-cluster-1-kafka-bootstrap.kafka:9092"
-            - name: SERVER_PORT
-              value: "8080"
-            - name: MONGO_URL
+            - name: QUARKUS_MONGODB_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
-                  name: mongo-config
-                  key: mongo-url
+                  name: mongo-config-xml-retriever
+                  key: url
+            - name: FUNNEL_MONGODB_DATABASE
+              value: "funnel-xml-retriever"
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-cluster-1-kafka-bootstrap.kafka:9092"
+            - name: FUNNEL_XMLRETRIEVER_SCHEDULE
+              value: "15m"
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /info
+              path: /q/health/live
               port: http
             initialDelaySeconds: 60
           readinessProbe:
             httpGet:
-              path: /info
+              path: /q/health/ready
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

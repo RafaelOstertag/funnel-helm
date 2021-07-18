@@ -30,11 +30,9 @@ pipeline {
 
             steps {
                 withKubeConfig(credentialsId: 'a9fe556b-01b0-4354-9a65-616baccf9cac') {
-                    sh "helm upgrade -n funnel -i --set image.tag=${params.VERSION} chronos helm/chronos"
                     sh "helm upgrade -n funnel -i --set image.tag=${params.VERSION} notifier helm/notifier"
-                    sh "helm upgrade -n funnel -i --set image.tag=${params.VERSION} persistence helm/persistence"
                     sh "helm upgrade -n funnel -i --set image.tag=${params.VERSION} rest helm/rest"
-                    sh "helm upgrade -n funnel -i --set image.tag=${params.VERSION} retriever helm/retriever"
+                    sh "helm upgrade -n funnel -i --set image.tag=${params.VERSION} xml-retriever helm/xml-retriever"
                 }
             }
         }
