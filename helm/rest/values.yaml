@@ -49,7 +49,8 @@ ingress:
   hosts:
     - host: funnel.app.k8s.kruemel.home
       paths:
-        - /
+        - path: /
+          pathType: ImplementationSpecific
   tls:
     - hosts:
         - funnel.app.k8s.kruemel.home
