@@ -1,0 +1,36 @@
+version: 2.1
+parameters:
+  version:
+    type: string
+    default: none
+
+orbs:
+  c: rafaelostertag/common-orb@1.12.0
+
+workflows:
+  version: 2
+  deploy-services:
+    when:
+      not:
+        or:
+          - equal: [ none, <<pipeline.parameters.version>> ]
+          - equal: [ "", <<pipeline.parameters.version>> ]
+    jobs:
+      - c/deploy-with-helm:
+          name: deploy notifier
+          namespace: funnel
+          release: notifier
+          chart: helm/notifier
+          version: <<pipeline.parameters.version>>
+      - c/deploy-with-helm:
+          name: deploy rest
+          namespace: notifier
+          release: rest
+          chart: helm/rest
+          version: <<pipeline.parameters.version>>
+      - c/deploy-with-helm:
+          name: deploy xml-retriever
+          namespace: notifier
+          release: xml-retriever
+          chart: helm/xml-retriever
+          version: <<pipeline.parameters.version>>
