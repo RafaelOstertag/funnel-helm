@@ -24,13 +24,13 @@ workflows:
           version: <<pipeline.parameters.version>>
       - c/deploy-with-helm:
           name: deploy rest
-          namespace: notifier
+          namespace: funnel
           release: rest
           chart: helm/rest
           version: <<pipeline.parameters.version>>
       - c/deploy-with-helm:
           name: deploy xml-retriever
-          namespace: notifier
+          namespace: funnel
           release: xml-retriever
           chart: helm/xml-retriever
           version: <<pipeline.parameters.version>>
